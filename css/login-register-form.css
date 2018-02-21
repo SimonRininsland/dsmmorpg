@@ -9,19 +9,27 @@
     top:-10px
 }
 
-.panel-body .first {
+.panel-body.first {
     padding-top:30px
+}
+
+.form-control.invalid {
+    border: 2px solid #ebccd1;
+}
+
+.form-control.valid {
+    border: 1px solid #ccc;
 }
 
 #login-alert{
     display:none
 }
 
-.input-group .username .password{
+.input-group.username.password{
     margin-bottom: 25px
 }
 
-.form-group .first{
+.form-group.first{
     margin-top:10px
 }
 
@@ -49,7 +57,7 @@
     margin-left:8px;
 }
 
-.form-group .last{
+.form-group.last{
     border-top: 1px solid #999;
     padding-top:20px
 }
