@@ -3,66 +3,67 @@
  * DSMMORPF - DamSmallMassivelyMultiplayerOnlineRole-PlayingGame
  */
 
-/**
- * Includes
- */
-include_once('classes/mysql.php');
-include_once('classes/configuration.php');
+namespace Dsmmorpg;
 
 /**
  * Create new Instance
  */
-$index = new Index();
+new Index();
 
 /**
  * Class Index
  */
 class Index{
 
-    private $configuration;
-    private $mysql;
-
     /**
      * html template pathes
      */
-    private $html_top = 'html/boiler-top.html';
-    private $html_bottom = 'html/boiler-botton.html';
-    private $html_login_register = 'html/login-register.html';
+    private $html_templates = [
+        'html_top' => 'html/boiler-top.html',
+        'html_login_bottom' => 'html/login-botton.html',
+        'html_login_register' => 'html/login-register.html',
+        'html_game_bottom' => 'html/game-botton.html',
+        'html_game_stage' => 'html/game-stage.html'
+    ];
 
     /**
      * Index constructor.
      */
     public function __construct() {
-
-        /** Configuration */
-        $this->configuration = new Configuration();
-
-        /** SQL Client */
-        $this->mysql = new MySQL($this->configuration->getSqlHost(), $this->configuration->getSqlUser(),
-            $this->configuration->getSqlPass(), $this->configuration->getSqlDb());
-
-        /** print HTML */
-        $this->printHtml();
-
-    }
-
-    /**
-     * printHtml Function
-     */
-    private function printHtml(){
-        if (file_exists($this->html_top) === true
-        && file_exists($this->html_login_register) === true
-        && file_exists($this->html_bottom) === true){
-            readfile($this->html_top);
-            readfile($this->html_login_register);
-            readfile($this->html_bottom);
+        /** check if the file is not called with $_POST */
+        if(empty($_POST) === true){
+            $this->printController();
         }
     }
 
     /**
-     * @return MySQL
+     * printController
      */
-    public function getMysql(){
-        return $this->mysql;
+    protected function printController(){
+        /** @todo: validate sessionID */
+        if(isset($_COOKIE['PHPSESSID']) === false){
+            /** print printLoginForm */
+            $this->printHtml('html_login_register', 'html_login_bottom');
+        } else {
+            /** print Game */
+            $this->printHtml('html_game_stage', 'html_game_bottom');
+        }
     }
+
+    /**
+     * printHTML
+     * @param $content
+     * @param string $top
+     * @param string $bottom
+     */
+    private function printHTML($content, $bottom, $top = 'html_top'){
+        if (file_exists($this->html_templates[$top]) === true
+        && file_exists($this->html_templates[$bottom]) === true
+        && file_exists($this->html_templates[$content]) === true){
+            readfile($this->html_templates[$top]);
+            readfile($this->html_templates[$content]);
+            readfile($this->html_templates[$bottom]);
+        }
+    }
+
 }

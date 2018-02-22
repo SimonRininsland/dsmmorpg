@@ -6,41 +6,34 @@
  * Time: 20:03
  */
 
+namespace Dsmmorpg;
 
-/**
- * Includes
- */
-include_once('mysql.php');
-include_once('configuration.php');
+include_once('Init.php');
 
 /**
  * if the file is called with post
  */
 if(empty($_POST) === false){
-    new SignInAction($_POST);
+    $signIn = new SignInAction();
+    $signIn->signInController($_POST);
 }
 
 class SignInAction {
-    /** @var Configuration  */
-    private $configuration;
 
     /** @var mixed  */
     private $clean_post;
 
     /** @var mixed  */
-    private $mysql;
+    private $init;
+
+    public function __construct(){
+        $this->init = new Init();
+    }
 
     /**
-     * SignInAction constructor.
+     * SignInAction Controller.
      */
-    public function __construct($post){
-        /** Configuration */
-        $this->configuration = new Configuration();
-
-        /** SQL Client */
-        $this->mysql = new MySQL($this->configuration->getSqlHost(), $this->configuration->getSqlUser(),
-            $this->configuration->getSqlPass(), $this->configuration->getSqlDb());
-
+    public function signInController($post){
         /**
          * filter input Post
          */
@@ -56,7 +49,7 @@ class SignInAction {
 
         } else if(empty($this->clean_post['signin']) === false){
             /** signIn */
-            $this->isValidUser($this->clean_post['username']);
+            $this->isValidUser($this->clean_post['username'], $this->clean_post['password']);
         } else {
             print('Post Corrupt');
         }
@@ -64,18 +57,38 @@ class SignInAction {
 
     /**
      * isValidUser Function
-     *
+     * @throws /Exception
      */
-    private function isValidUser($username){
+    private function isValidUser($username, $passwd){
         if(empty($username) === false){
             try{
-                $user = $this->mysql->where(array('username' => $username))->get('user');
-                if($user[0]['username'] === $username){
-                    print(1);
+                /**
+                 * get User Data
+                 * @var $dbUser
+                 */
+                $dbUser = $this->init->getMysql()->where(array('username' => $username))->get('user');
+
+                /** check if password and User is correct */
+                if($dbUser[0]['username'] === $username){
+
+                    if(crypt($passwd, $dbUser[0]['password']) == $dbUser[0]['password']) {
+                        // password is correct
+                        session_start();
+                        if (empty($_COOKIE['PHPSESSID']) === false ){
+                            $this->init->getMysql()->where('id', $dbUser[0]['id'])
+                                ->update('user', array('session' => $_COOKIE['PHPSESSID']));
+                            print(1);
+                        } else {
+                            print('Can\'t start Session or write Cookie');
+                        }
+
+                    } else {
+                        print('Password is incorrect!');
+                    }
                 } else {
                     print('Username is not correct!');
                 }
-            }catch(Exception $e){
+            }catch(\Exception $e){
                 print ('Caught exception: '. $e->getMessage());
             }
         } else {
@@ -84,8 +97,9 @@ class SignInAction {
     }
 
     /**
-     * isValidUser Function
-     *
+     * register
+     * @param $post
+     * @throws /Exception
      */
     private function register($post){
         if(empty($post) === false
@@ -93,15 +107,16 @@ class SignInAction {
             && empty($post['username']) === false
             && empty($post['passwd']) === false){
             try{
-                $this->mysql->insert('user',
+                /** write crypted pw with username and email in DB */
+                $this->init->getMysql()->insert('user',
                     array(
                         'username' => $post['username'],
-                        'password' => $post['passwd'],
+                        'password' => crypt($post['passwd']),
                         'email' => $post['email']
                     )
                 );
                 print('1');
-            }catch(Exception $e) {
+            }catch(\Exception $e) {
                 if (strpos($e, 'Duplicate entry') !== false) {
                     if (strpos($e, 'username') !== false) print ('Username already in use');
                     if (strpos($e, 'email') !== false) print ('Email already in use');

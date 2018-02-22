@@ -27,12 +27,14 @@ $(document).ready(function(){
         event.preventDefault();
         event.stopPropagation();
 
-        $.post( "classes/signInAction.php",
+        $.post( "classes/SignInAction.php",
             $( "#loginform" ).serialize()
         ).done(function(data) {
             if(data === '1'){
+
+                $('#login-username').removeClass('invalid');
                 // start the game
-                $('#login-username').addClass('valid');
+
             } else {
                 $('#login-alert').toggle(true);
                 $('#login-username').addClass('invalid');
@@ -50,12 +52,12 @@ $(document).ready(function(){
         event.preventDefault();
         event.stopPropagation();
 
-        $.post( "classes/signInAction.php",
+        $.post( "classes/SignInAction.php",
             $( "#signupform" ).serialize()
         ).done(function(data) {
             if(data === '1'){
-                // start the game
-                $('#login-username').addClass('valid');
+                location.reload();
+                $('#login-username').removeClass('invalid');
             } else {
                 $('#signupalert').toggle(true);
                 $('#signupalert').text(data);
