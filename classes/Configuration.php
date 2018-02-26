@@ -12,10 +12,10 @@ class Configuration {
      * Configuration MYSQL
      */
     static private $sql_host = 'localhost';
-    static private $sql_user = 'web375_1';
-    static private $sql_pass = 'qsS2BQWB';
-    static private $sql_db = 'web375_1';
-
+    static private $sql_user = 'root';
+    static private $sql_pass = '';
+    static private $sql_db = 'dsmmorpg';
+    
     /**
      * @return mixed
      */

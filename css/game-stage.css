@@ -23,4 +23,38 @@
     text-decoration: underline;
     color: blue;
 }
+#game-stage {
+    border: 1px solid lightgrey;
+    height: 550px;
+}
+#game-stage-top {
+    height: 450px;
+}
+#game-stage-bottom {
+    border-top: 1px solid lightgrey;
+    margin: 0 15px 0 15px;
+    height: 100px;
+}
+#text {
+    height: 100px;
+    text-align: center;
+    font-size: 19px;
+    padding: 10px;
+}
+#screen{
+    background: aliceblue;
+    height: 350px;
+}
 
+.navbar-top{
+    padding: 10px;
+}
+
+.choose-chars{
+    width: 240px;
+    height: 200px;
+    margin: 30px;
+    margin-top: 70px;
+    float: left;
+    background-repeat: no-repeat;
+}

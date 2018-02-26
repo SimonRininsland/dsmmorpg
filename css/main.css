@@ -1,0 +1,16 @@
+/**
+Main CSS for overall global css
+ */
+
+body {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.container {
+    width: 902px;
+    padding: 0;
+}
+.navigation-bar{
+    padding: 5px 15px 0 15px;
+}

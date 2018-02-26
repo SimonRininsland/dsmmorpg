@@ -40,30 +40,58 @@ class GameDealer{
      */
     private function postController($post){
         /** if the post function param is not empty */
-        if(empty($post['function']) === false){
-            $return = call_user_func(array($this, $post['function']), $post['param']);
-            if(empty($return) === false && $return !== false){
-                print($return);
+        if(empty($post['function']) === false && empty($post['param']) === false){
+            /**
+             * do a handy call user func
+             * @var  $returnData
+             */
+            $returnData = call_user_func(array($this, $post['function']), $post['param']);
+
+            if(empty($returnData) === false && $returnData !== false){
+                print($returnData);
             } else {
                 http_response_code(400);
-                print('Post Function was not okay: '
-                    .$post['function']. ', param: '.$post['param']);
+                print('Post Function was not okay: '.$post['function']. ', param: '.
+                    $post['param'].' return: '.$returnData);
             }
         } else {
-            print('Post Function was empty');
+            http_response_code(400);
+            print('Post Function or param was empty '
+                .$post['function']. ', param: '.$post['param']);
         }
-
     }
 
     /**
-     * getCharacter
+     * getCharacters
      * @param $session
      * @return mixed
      * @throws /Exception
      */
-    public function getCharacter($session){
-        $dbUser = $this->init->getMysql()->where(array('session' => $session))->get('user');
-        return $dbUser[0]['username'];
+    public function getCharacters($session){
+        try {
+            /** @var  $dbUser */
+            $dbUser = $this->init->getMysql()->where(array('session' => $session))->get('user');
+        } catch(\Exception $e){
+            return('Can\'t get DB User: '.$e);
+        }
+
+        if (empty($dbUser) === false){
+            try {
+            /** @var  $character */
+                $characters = $this->init->getMysql()->where(array('uid' => $dbUser[0]['id']))->get('characters');
+
+            } catch(\Exception $e){
+                return('Can\'t get DB Character: '.$e);
+            }
+        } else {
+            return('DB User was not found');
+        }
+
+        if (empty($characters) === false){
+            return $characters;
+        } else {
+            return(1);
+        }
     }
 
     /**
@@ -73,7 +101,55 @@ class GameDealer{
      * @throws /Exception
      */
     public function getUserName($session){
-        $dbUser = $this->init->getMysql()->where(array('session' => $session))->get('user');
+        /** @var  $dbUser */
+        try {
+            $dbUser = $this->init->getMysql()->where(array('session' => $session))->get('user');
+        } catch(\Exception $e){
+            return('Can\'t get DB User: '.$e);
+        }
         return $dbUser[0]['username'];
+    }
+
+    /**
+     * getUserId
+     * @param $session
+     * @return mixed
+     * @throws /Exception
+     */
+    public function getUserId($session){
+        /** @var  $dbUser */
+        try {
+            $dbUser = $this->init->getMysql()->where(array('session' => $session))->get('user');
+        } catch(\Exception $e){
+            return('Can\'t get DB User: '.$e);
+        }
+        return $dbUser[0]['id'];
+    }
+
+    /**
+     * storeCharacter
+     * @param $params
+     * @return int|string
+     */
+    public function storeCharacter($params){
+        /** get all Informations */
+        $paramArray = explode(',',$params);
+        $sortOf = $paramArray[1];
+        $nickname = $paramArray[2];
+        $uid = $this->getUserId($paramArray[0]);
+
+        /** @var  $dbUser */
+        try {
+            $this->init->getMysql()->insert('characters',
+                array(
+                    'uid' => $uid,
+                    'name' => $nickname,
+                    'type' => $sortOf
+                )
+            );
+        } catch(\Exception $e){
+            return('Can\'t store Character: '.$e);
+        }
+        return 1;
     }
 }

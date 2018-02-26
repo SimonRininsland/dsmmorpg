@@ -31,7 +31,7 @@ class Index{
      */
     public function __construct() {
         /** check if the file is not called with $_POST */
-        if(empty($_POST) === true){
+        if(empty($_POST) === true) {
             $this->printController();
         }
     }
@@ -40,8 +40,8 @@ class Index{
      * printController
      */
     protected function printController(){
-        /** @todo: validate sessionID */
-        if(isset($_COOKIE['PHPSESSID']) === false){
+        /** @todo: validate session */
+        if(isset($_COOKIE['session']) === false){
             /** print printLoginForm */
             $this->printHtml('html_login_register', 'html_login_bottom');
         } else {

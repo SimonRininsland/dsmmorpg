@@ -70,18 +70,11 @@ class SignInAction {
 
                 /** check if password and User is correct */
                 if($dbUser[0]['username'] === $username){
-
                     if(crypt($passwd, $dbUser[0]['password']) == $dbUser[0]['password']) {
-                        // password is correct
-                        session_start();
-                        if (empty($_COOKIE['PHPSESSID']) === false ){
-                            $this->init->getMysql()->where('id', $dbUser[0]['id'])
-                                ->update('user', array('session' => $_COOKIE['PHPSESSID']));
-                            print(1);
-                        } else {
-                            print('Can\'t start Session or write Cookie');
-                        }
+                        /** password is correct */
 
+                        setcookie('session', $dbUser[0]['session'], time() + 36000, "/");
+                        print(1);
                     } else {
                         print('Password is incorrect!');
                     }
@@ -108,13 +101,17 @@ class SignInAction {
             && empty($post['passwd']) === false){
             try{
                 /** write crypted pw with username and email in DB */
+                $uniqid = uniqid();
                 $this->init->getMysql()->insert('user',
                     array(
                         'username' => $post['username'],
-                        'password' => crypt($post['passwd']),
-                        'email' => $post['email']
+                        'password' => crypt($post['passwd'], $post['passwd']),
+                        'email' => $post['email'],
+                        'session' => $uniqid
                     )
                 );
+
+                setcookie('session', $uniqid, time() + 36000, "/");
                 print('1');
             }catch(\Exception $e) {
                 if (strpos($e, 'Duplicate entry') !== false) {

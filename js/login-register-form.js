@@ -31,17 +31,18 @@ $(document).ready(function(){
             $( "#loginform" ).serialize()
         ).done(function(data) {
             if(data === '1'){
-
                 $('#login-username').removeClass('invalid');
                 // start the game
-
+                location.reload(true);
             } else {
                 $('#login-alert').toggle(true);
                 $('#login-username').addClass('invalid');
                 $('#login-alert').text(data);
             }
         }).fail(function(error) {
-            console.log(error);
+            $('#login-alert').toggle(true);
+            $('#login-username').addClass('invalid');
+            $('#login-alert').text(error.statusText);
         });
     });
 
@@ -64,6 +65,9 @@ $(document).ready(function(){
                 $('#login-username').addClass('invalid');
             }
         }).fail(function(error) {
+            $('#signupalert').toggle(true);
+            $('#signupalert').text(error.statusText);
+            $('#login-username').addClass('invalid');
             console.log(error);
         });
     });

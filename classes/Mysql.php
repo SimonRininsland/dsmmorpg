@@ -232,7 +232,7 @@ class Mysql{
      * @param $table
      * @param $data
      * @return bool
-     * @throws Exception
+     * @throws /Exception
      */
     public function insert($table, $data){
         $link =& self::connection();
@@ -247,7 +247,7 @@ class Mysql{
         $sql = sprintf("INSERT INTO %s (%s) VALUES (%s)", $table, $fields, $values);
         self::set('last_query', $sql);
         if(!mysql_query($sql)){
-            throw new Exception('Error executing MySQL query: '.$sql.'. MySQL error '.mysql_errno().': '.mysql_error());
+            throw new \Exception('Error executing MySQL query: '.$sql.'. MySQL error '.mysql_errno().': '.mysql_error());
         }else{
             self::set('insert_id', mysql_insert_id());
             return true;
