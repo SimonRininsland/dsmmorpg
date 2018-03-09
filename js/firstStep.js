@@ -1,3 +1,8 @@
+$firstPreTextState = 'FirstStart';
+$firstTextState = 'Welcome';
+$firstTextOrder = ['Welcome', 'Choose', 'Choosed', 'Char-', 'Choosed-sure',
+    'Choosed-okay','Choosed-askForNick'];
+
 /**
  * stateFirstStart
  */
@@ -6,59 +11,44 @@ function stateFirstStart(){
     setBackground();
 
     /** add Chars **/
-    $screen.append("<div class='choose-chars' id='Ragnar' data-type='Warrior'></div>" +
-        "<div class='choose-chars' id='Lagatha' data-type='Assasine'></div><div class='choose-chars' id='Ivar' data-type='Villain'></div>");
-    /** set character Icons **/
-    $('.choose-chars').each(function(){
-        $(this).css('background-image', 'url(resources/images/characters/char-'+$(this).attr('id')+'.png');
-    });
+    $screen.append("<div class='choose-chars' id='Ragnar' data-type='0'></div>" +
+        "<div class='choose-chars' id='Lagatha' data-type='1'></div><div class='choose-chars' id='Ivar' data-type='2'></div>");
 
-    /** show Text derefered**/
-    showText($text['FirstStart']['Welcome'], 0, $textSpeed).done( function(){
-        $textEl.append('</br>');
-        showText($text['FirstStart']['Choose'], 0, $textSpeed).done(function(){
-            /** if clicked on Char **/
-            $("div[class='choose-chars']").on('click', function(){
-                onClickEl = $(this);
-                $textEl.text('');
-                $('.choose-chars').removeClass('selected');
+    /** show Text derefered **/
+    textHandler($firstPreTextState, ['Welcome']);
 
-                /** set character Icons **/
-                $('.choose-chars').each(function(){
-                    $(this).css('background-image', 'url(resources/images/characters/char-'+$(this).attr('id')+'.png');
-                });
+    /** set on click events **/
+    $('.choose-chars').on('click', function(){
+        var onClickEl = $(this);
+        $textEl.text('');
 
-                onClickEl.addClass('selected').css('background-image', 'url(resources/images/characters/char-'+onClickEl.attr('id')+'-selected.png');
+        if (onClickEl.hasClass('selected')){
+            /** Character is chosen **/
+            textHandler($firstPreTextState, ['Choosed-okay', 'Choosed-askForNick']);
+            nickname = prompt($text['FirstStart']['Choosed-askForNick'],onClickEl.attr('id'));
+            while ((nickname === null || nickname.length <= 0 )&& onClickEl !== nickname){
+                nickname = prompt($text['FirstStart']['Choosed-askForNick'], onClickEl.attr('id'));
+            }
 
-                showText($text['FirstStart']['Choosed'], 0, $textSpeed).done(function(){
-                    showText($text['FirstStart']['Char-'+onClickEl.attr('id')], 0, $textSpeed).done(function(){
-                        /** last Text is spoken **/
-                        $textEl.append('</br>');
-                        showText($text['FirstStart']['Choosed-sure'], 0, $textSpeed).done(function(){
-
-                            $('.choose-chars.selected').on('click', function(event){
-                                $('.choose-chars').off('click');
-                                $textEl.text('');
-
-                                /** Character is chosen **/
-                                showText($text['FirstStart']['Choosed-okay'], 0, $textSpeed).done(function(){
-                                    $textEl.append(onClickEl.attr('id'));
-                                    $textEl.append('</br>');
-                                    nickname = prompt($text['FirstStart']['Choosed-askForNick'], $(this).attr('id'));
-                                    $characters.push(new Character(nickname, onClickEl.data('type')));
-                                    /** check if storing Character is okay **/
-                                    if(storeCharacter() === true){
-                                        $state = 2;
-                                        stateController();
-                                    } else {
-                                        $('#game-alert').toggle(true).text('Something wen\'t wrong');
-                                    }
-                                });
-                            });
-                        })
-                    });
-                });
+            /** check if storing Character is okay **/
+            storeCharacter(nickname, onClickEl.data('type')).done(function(charId){
+                /** store the character in js Object **/
+                $characters.push(new Character(nickname, onClickEl.data('type'), parseInt(JSON.parse(charId))));
+                $state = 2;
+                location.reload();
+            }).fail(function(fail){
+                $gameError.toggle(true).text('Something wen\'t wrong with storing Char: '+fail);
             });
-        });
+        } else {
+            /** change char select **/
+            /** if i click on the selected char **/
+            $('.choose-chars.selected').removeClass('selected');
+
+            /** add select Class on Char **/
+            onClickEl.addClass('selected');
+
+            /** Text if you're sure **/
+            textHandler($firstPreTextState, ['Choosed', 'Char-'+onClickEl.attr('id'), 'Choosed-sure']);
+        }
     });
 }

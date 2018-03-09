@@ -33,6 +33,7 @@
 #game-stage-bottom {
     border-top: 1px solid lightgrey;
     margin: 0 15px 0 15px;
+    width: 900px;
     height: 100px;
 }
 #text {
@@ -53,8 +54,24 @@
 .choose-chars{
     width: 240px;
     height: 200px;
-    margin: 30px;
-    margin-top: 70px;
+    margin: 70px 30px 30px;
     float: left;
+    background-position-x: center;
     background-repeat: no-repeat;
+}
+
+.choose-chars.selected{
+    box-shadow: 15px 20px 10px rgba(0, 0, 0, .5)
+}
+#Ragnar {
+    background-image: url("../resources/images/characters/char-Ragnar.png");
+}
+#Lagatha {
+    background-image: url("../resources/images/characters/char-Lagatha.png");
+}
+#Ivar {
+    background-image: url("../resources/images/characters/char-Ivar.png");
+}
+.accountInfos > span{
+    margin-right: 20px;
 }

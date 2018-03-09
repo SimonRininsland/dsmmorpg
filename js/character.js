@@ -1,4 +1,5 @@
-function Character(sortOf, nick) {
-    this.sortOf = sortOf;
+function Character(nick, sortOf, charId) {
+    this.charId = charId;
     this.nick = nick;
+    this.sortOf = sortOf;
 }

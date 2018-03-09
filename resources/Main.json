@@ -1,13 +1,12 @@
 {
   "FirstStart": {
-    "Welcome": "Welcome to DSMMORPG the damn small Massively Multiplayer Online Role-Playing Game. I hope you enjoy the Game.",
-    "Choose": "Please choose your Character from the above. Simply click on One of them.",
+    "Welcome": "Welcome to DSMMORPG the damn small Massively Multiplayer Online Role-Playing Game. I hope you enjoy the Game./Please choose your Character from the above. Simply click on One of them.",
     "Choosed": "Are you sure you wan't to select ",
-    "Char-Ragnar": "the Leader Ragnar?",
-    "Char-Lagatha": "the Assasine Lagatha?",
-    "Char-Ivar": "the smart Ivar?",
+    "Char-Ragnar": "the Leader Ragnar?/",
+    "Char-Lagatha": "the Assasine Lagatha?/",
+    "Char-Ivar": "the smart Ivar?/",
     "Choosed-sure": " Click on the choosed Character again to finally select.",
-    "Choosed-okay": "Congratulation! Have Fun with ",
+    "Choosed-okay": "Congratulation!/",
     "Choosed-askForNick": "Please Enter a Nickname for your Character"
   }
 }

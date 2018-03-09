@@ -5,15 +5,19 @@
 /** store username in global var **/
 var $username;
 var $state;
+/** @todo: get User **/
+var $user;
 var $characters = [];
 
-var $screen = $('#screen');
 var $text = {};
-var $textEl = $('#text');
 var $textSpeed = 40;
-var $textDeref = 1;
 
 var $landscapesPath = 'resources/images/landscapes/';
+
+/** El. only one select **/
+var $gameError = $('#game-alert');
+var $textEl = $('#text');
+var $screen = $('#screen');
 
 $(document).ready(function(){
     /** get Text **/
@@ -46,24 +50,19 @@ function stateController(){
  * choose Char
  */
 function stateSelectChar(){
-    console.log("stateSelectChar");
     /** set the Background **/
     setBackground();
 }
 
 /**
  * storeCharacter
+ * return new Character ID
  */
-function storeCharacter() {
+function storeCharacter(nick, type) {
     /** store the Character **/
     return $.post( "classes/GameDealer.php", {
         function: "storeCharacter",
-        param: getCookie("session") +',' +$characters.sortOf + ',' + $characters.nick
-    }).done(function(data) {
-        return true;
-    }).fail(function(error) {
-        $('#game-alert').toggle(true).text(error.responseText);
-        return false;
+        param: getCookie("session") + ',' + type + ',' + nick
     });
 }
 
@@ -96,10 +95,13 @@ function getCharacter() {
             $state = 1;
         } else {
             $state = 2;
-            $characters = data;
+            $characters = $.parseJSON(data);
+            $($characters).each(function(){
+                $('.navbar-top').find('#characterName').append(this.name);;
+            });
         }
     }).fail(function(error) {
-        $('#game-alert').toggle(true).text(error.responseText);
+        $gameError.toggle(true).text(error.responseText);
     });
 }
 
@@ -113,9 +115,9 @@ function getUsername() {
             param: getCookie("session")}
     ).done(function(data) {
         // Username is okay
-        $username = $('.navbar-top').find('#username').text(data.toString());
+        $username = $('.navbar-top').find('#username').append($.parseJSON(data));
     }).fail(function(error) {
-        $('#game-alert').toggle(true).text(error.responseText);
+        $gameError.toggle(true).text(error.responseText);
     });
 }
 
@@ -130,31 +132,3 @@ function getCookie(name) {
     if (parts.length === 2) return parts.pop().split(";").shift();
 }
 
-/**
- * showText
- * @param message
- * @param index
- * @param interval
- * @returns {*}
- */
-function showText (message, index, interval) {
-    if($textDeref === 1){
-        $textDeref = $.Deferred();
-        return showTextRek(message, index, interval,$textDeref);
-    } else {
-        return $.Deferred().promise();
-    }
-
-}
-function showTextRek (message, index, interval,def) {
-    if (index < message.length) {
-        $($textEl).append(message[index++]);
-        setTimeout(function (){
-            showTextRek(message, index, interval,def);
-        }, interval);
-    } else {
-        $textDeref = 1;
-        def.resolve();
-    }
-    return def.promise();
-}

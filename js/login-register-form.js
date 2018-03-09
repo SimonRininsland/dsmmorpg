@@ -23,7 +23,7 @@ $(document).ready(function(){
     /**
      * sign in and sign up actions
      */
-    $('#btn-login').on('click', function(event){
+    $('#loginform').on('submit', function(event){
         event.preventDefault();
         event.stopPropagation();
 

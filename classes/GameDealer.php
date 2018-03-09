@@ -48,7 +48,7 @@ class GameDealer{
             $returnData = call_user_func(array($this, $post['function']), $post['param']);
 
             if(empty($returnData) === false && $returnData !== false){
-                print($returnData);
+                print(json_encode($returnData));
             } else {
                 http_response_code(400);
                 print('Post Function was not okay: '.$post['function']. ', param: '.
@@ -127,7 +127,7 @@ class GameDealer{
     }
 
     /**
-     * storeCharacter
+     * storeCharacter and return CharID
      * @param $params
      * @return int|string
      */
@@ -147,9 +147,25 @@ class GameDealer{
                     'type' => $sortOf
                 )
             );
+            return $this->getLastStoredCharId($uid);
         } catch(\Exception $e){
             return('Can\'t store Character: '.$e);
         }
-        return 1;
+    }
+
+    /**
+     * getLastStoredCharId
+     * @param $uid
+     * @return mixed
+     * @throws /Exception
+     */
+    private function getLastStoredCharId($uid){
+        /** @var  $dbUser */
+        try {
+            $dbUser = $this->init->getMysql()->where(array('uid' => $uid))->get('characters');
+        } catch(\Exception $e){
+            return('Can\'t get DB Char: '.$e);
+        }
+        return $dbUser[count($dbUser)-1]['cid'];
     }
 }
